@@ -169,10 +169,7 @@ def populate_centrals(cen,ns):
 		print '\t\tTime to populate halos:  ',dt,'minutes'
 		print params.justify,np.shape(sat)[0]/dt,'per min'
 		
-	if params.iwantvel==0:
-		return sat[:,:3]
-	if params.iwantvel==1:
-		return np.column_stack((sat[:,:3],sat[:,4:]))
+        return sat[:,:3]
 
 
 

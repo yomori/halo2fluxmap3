@@ -31,7 +31,6 @@ def ReadPkscLightCone(i):
 
     filename = params.folder+params.inputfile
     Nreads   = params.Nreads
-    iwantvel = params.iwantvel
 
     pkfile   = open(filename,"rb")
 
@@ -55,21 +54,11 @@ def ReadPkscLightCone(i):
     rho       = 2.775e11*params.omegam*params.h**2
     halos.data[:,6] = (4*(np.pi)/3)*(halos.data[:,6]**3)*rho # convert 6 from RTH to M
 
-    if iwantvel==0:
-        halos.data = np.column_stack((
-                        halos.data[:,0],
-                        halos.data[:,1],
-                        halos.data[:,2],
-                        halos.data[:,6]))            
-    else:
-        halos.data = np.column_stack((  # x,y,z,M,vx,vy,vz
-                        halos.data[:,0],
-                        halos.data[:,1],
-                        halos.data[:,2],
-                        halos.data[:,6],
-                        halos.data[:,3],
-                        halos.data[:,4],
-                        halos.data[:,5]))            
+    halos.data = np.column_stack((
+        halos.data[:,0],
+        halos.data[:,1],
+        halos.data[:,2],
+        halos.data[:,6]))            
 
     return halos
 

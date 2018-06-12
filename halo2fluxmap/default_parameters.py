@@ -26,7 +26,6 @@ num_redshift = 1       # If memory limited, splits the map into redshift slices
 min_mass     = 2.62e13
 box_size     = 40000
 
-iwantvel     = 0
 iwantcat     = 0     #save catalogue of satellites and centrals 
 H0           = 70
 omegab       = 0.043

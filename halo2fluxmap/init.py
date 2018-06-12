@@ -33,7 +33,6 @@ def getparameters(filename):
     if 'fov'      in dict: params.fov      = dict['fov']
     if 'flat'     in dict: params.flat     = dict['flat']
     if 'numdens'  in dict: params.numdens  = dict['numdens']
-    if 'iwantvel' in dict: params.iwantvel = dict['iwantvel']
     if 'iwantcat' in dict: params.iwantcat = dict['iwantcat']
 
     if 'hod' in dict: params.hod = dict['hod']
