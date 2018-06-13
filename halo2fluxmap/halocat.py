@@ -55,10 +55,11 @@ def ReadPkscLightCone(i):
     halos.data[:,6] = (4*(np.pi)/3)*(halos.data[:,6]**3)*rho # convert 6 from RTH to M
 
     halos.data = np.column_stack((
-        halos.data[:,0],
-        halos.data[:,1],
-        halos.data[:,2],
-        halos.data[:,6]))            
+        halos.data[:,0], # x in comoving MPC
+        halos.data[:,1], # y in comoving MPC
+        halos.data[:,2], # z in comoving MPC
+        halos.data[:,6], # mass in Solar Mass (no h anyhere)!
+    ))            
 
     return halos
 
