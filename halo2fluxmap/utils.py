@@ -1,13 +1,13 @@
-import numpy as np
-import scipy as sp
-import cosmolopy.distance as cd
-from scipy              import special
-from scipy.integrate    import *
-from scipy.interpolate  import *
-from cosmolopy          import *
-from mods import *
-from globals import *
 import datetime
+import params
+
+import numpy              as np
+import scipy              as sp
+import cosmolopy.distance as cd
+
+from   scipy.integrate    import *
+from   scipy.interpolate  import *
+from   cosmolopy          import *
 
 def r2m(r):
     rho = 2.78e11 * params.omegam * (params.h**2)
@@ -139,3 +139,4 @@ def write_time(string_in, rank):
         print ''
 
     return
+

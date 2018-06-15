@@ -2,6 +2,10 @@ import healpy as hp
 import numpy as np
 cimport numpy as np
 
+from numpy.random import *
+from .hod   import *
+from utils import *
+
 def makemap(np.ndarray x,np.ndarray y, np.ndarray z,np.ndarray F, nside):
     
     pixind = hp.vec2pix(nside,x,y,z) #to get same orientation as pks2map
@@ -49,6 +53,15 @@ def makemapflat(np.ndarray x,np.ndarray y, np.ndarray z,np.ndarray F, nside,fov)
     
 def cen2sat(np.ndarray cen, np.ndarray n):
     
+    '''
+    Parameters
+    cen[:,0]:  array of central masses
+    n: 	       array of central number of satellites for each central
+
+    Returns
+    sat[:,0]: array containing parent halo mass for each satellite
+    '''
+    
     cdef int N_sat = np.sum(n)
     cdef int N_cen = np.shape(cen)[0]
     cdef int N_prp = np.shape(cen)[1]
@@ -60,6 +73,42 @@ def cen2sat(np.ndarray cen, np.ndarray n):
     for i in range(N_cen):
         sat[count:count+n[i],:] = cen[i,:]
         count += n[i]	
+        
+    return sat    
+
+def cen2sat_masses(np.ndarray cen, np.ndarray n, np.ndarray nmean):
+    
+    '''
+    Parameters
+    cen[:,0]: array of central masses
+    n: 	      array of central number of satellites for each central
+
+    Returns
+    sat[:,0]: array containing subhalo mass for each satellite
+    '''
+    
+    cdef int N_sat = np.sum(n)
+    cdef int N_cen = np.shape(cen)[0]
+    cdef int N_prp = np.shape(cen)[1]
+    
+    sat = np.zeros((N_sat,N_prp),dtype='float32')
+
+    # Make function of mass fraction as a function of number of satellites
+    muofn = make_muofn()
+
+    cdef int count = 0
+    cdef int i
+    for icen in range(N_cen):
+        N_sat    = n[icen]
+        N_satbar = nmean[icen]
+        M_cen    = cen[icen,0]
+        Rank = uniform(0.0,N_satbar,N_sat)
+        mu   = muofn(Rank)
+
+        for isat in range(N_sat):
+            sat[count+isat,0] = mu[isat] * M_cen
+            sat[count+isat,1] = N_sat
+        count += n[icen]
         
     return sat
     

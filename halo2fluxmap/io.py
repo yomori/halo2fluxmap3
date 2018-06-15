@@ -1,11 +1,14 @@
-from    mods import * 
-from   utils import *
-from halocat import *
-from globals import *
+#from    mods import * 
+#from   utils import *
+#from halocat import *
+#from globals import *
 
 import sys
 
 import healpy as hp
+
+from   utils   import *
+from   halocat import *
 
 def read_catalog():
     for i in range(params.Nreads):  

@@ -1,5 +1,6 @@
 import os
 import datetime
+import params
 
 import numpy              as np
 import pylab              as pl
@@ -8,7 +9,6 @@ import cosmolopy.distance as cosdist
 
 from astropy.io import fits
 from cosmolopy  import fidcosmo
-from globals    import *
 
 class HaloLightCone():
     """

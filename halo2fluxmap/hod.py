@@ -1,6 +1,7 @@
-from mods import *
 import time
 import scipy
+
+from utils   import *
 
 def hod(M): 
 
@@ -52,7 +53,7 @@ def hod_shang(M):
 	x_m = np.linspace(np.log(M.min()),np.log(M.max()),1000)
 	N_sat_i = np.zeros(len(x_m))
 	for i in range(len(x_m)):
-		N_sat_i[i], foo = quad(integrand_m,np.log(params.shang_Msmin),
+		N_sat_i[i], foo = scipy.integrate.quad(integrand_m,np.log(params.shang_Msmin),
 				       x_m[i],args=x_m[i])
 		N_sat_i[i] = max(0,N_sat_i[i])
 
@@ -89,7 +90,8 @@ def root_finder(c,lnm):
 	return root
 
 def cen2ns(cen):
-	return np.random.poisson(hod(cen[:,3])[0]).astype('int32')
+        nsmean = hod(cen[:,3])[0]
+	return np.random.poisson(nsmean).astype('int32'),nsmean
 
 def clnm2r(c,lnm):
 
@@ -113,6 +115,7 @@ def clnm2r(c,lnm):
 def populate_centrals(cen,ns):
 
         from mpi4py import MPI
+        import flux2map
 
 	t1=time.time()
 
@@ -165,11 +168,24 @@ def populate_centrals(cen,ns):
 
 	dt = (time.time()-t1)/60.
 	if(params.rank==0 and params.verbose>0): 
-		print ''
-		print '\t\tTime to populate halos:  ',dt,'minutes'
-		print params.justify,np.shape(sat)[0]/dt,'per min'
+		report('Time to populate halos:  '+str(dt)+'minutes',2)
 		
         return sat[:,:3]
 
+def make_muofn():
+	def integrand(lmu):
+		mu=np.exp(lmu)
 
+		dns_dm = jiang_shmf(mu,1.0)
+
+		return dns_dm
+
+        mu = np.logspace(np.log10(1e-6),0,1000)
+	n  = np.zeros(len(mu))
+	for i in range(len(mu)):
+		n[i], foo = scipy.integrate.quad(integrand,np.log(mu[i]),0.)
+
+        muofn = interpolate.interp1d(n,mu)
+
+        return muofn
 

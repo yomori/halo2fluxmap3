@@ -1,11 +1,13 @@
-from pdict import *
-from cosmolopy import fidcosmo
 import mpi4py.rc
 import datetime
 
+from   pdict     import *
+from   cosmolopy import fidcosmo
+
 def getparameters(filename):
     
-    import default_parameters as params
+    import params
+    import globals
 
     dict=pdict()
     dict.read_from_file(filename)
@@ -38,7 +40,6 @@ def getparameters(filename):
     if 'hod' in dict: params.hod = dict['hod']
     if 'LM'  in dict: params.LM  = dict['LM']
 
-    if 'shang_L0'     in dict: params.shang_L0     = dict['shang_L0']
     if 'shang_Td'     in dict: params.shang_Td     = dict['shang_Td']
     if 'beta'         in dict: params.shang_beta   = dict['shang_beta']
     if 'shang_eta'    in dict: params.shang_eta    = dict['shang_eta']
@@ -75,6 +76,9 @@ def getparameters(filename):
     params.cosmo['omega_b_0']      = params.omegab
     params.cosmo['omega_lambda_0'] = params.omegal
     params.cosmo['sigma_8']        = params.sigma8
+
+    # convert model parameters to fiducial units
+    params.shang_Mpeak /= globals.Mf
 
     return params
 
