@@ -3,7 +3,8 @@ import utils
 import io
 import hod
 import fluxmodel
-import halos2map
+import halos2sources
+import sources2map
 
 import params
 

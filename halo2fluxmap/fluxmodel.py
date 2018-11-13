@@ -84,6 +84,8 @@ def LF(M,x,y,z,gtype):
 		L = M*np.sqrt(200./500) / 1.e14 #sqrt(200/500) to convert M_200 to M_500
 
 	L *= nu2theta(r)
+
+
 	L *= (1+z)**params.shang_eta
 
 	return L

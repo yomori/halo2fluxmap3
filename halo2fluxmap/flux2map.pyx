@@ -81,17 +81,17 @@ def cen2sat_masses(np.ndarray cen, np.ndarray n, np.ndarray nmean):
     '''
     Parameters
     cen[:,0]: array of central masses
-    n: 	      array of central number of satellites for each central
+    n: 	      array of number of satellites for each central
 
     Returns
-    sat[:,0]: array containing subhalo mass for each satellite
+    msat[:]: array containing subhalo mass for each satellite
     '''
     
     cdef int N_sat = np.sum(n)
     cdef int N_cen = np.shape(cen)[0]
     cdef int N_prp = np.shape(cen)[1]
     
-    sat = np.zeros((N_sat,N_prp),dtype='float32')
+    msat = np.zeros(N_sat,dtype='float32')
 
     # Make function of mass fraction as a function of number of satellites
     muofn = make_muofn()
@@ -106,9 +106,8 @@ def cen2sat_masses(np.ndarray cen, np.ndarray n, np.ndarray nmean):
         mu   = muofn(Rank)
 
         for isat in range(N_sat):
-            sat[count+isat,0] = mu[isat] * M_cen
-            sat[count+isat,1] = N_sat
+            msat[count+isat] = mu[isat] * M_cen
         count += n[icen]
         
-    return sat
+    return msat
     

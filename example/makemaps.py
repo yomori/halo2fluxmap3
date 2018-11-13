@@ -34,9 +34,15 @@ for inu_map in range(len(h2fm.params.freq_list)):
     h2fm.params.nu_obs     = h2fm.params.freq_list[inu_map] * 1.e9
     h2fm.params.nu_obs_GHz = h2fm.params.freq_list[inu_map]
         
+     # Give flux to gals and put in map
+#    intensity, flux_cen, flux_sat = h2fm.halos2map.halos2map(cen,ns,nsmean,sat) 
+ 
     # Give flux to gals and put in map
-    intensity, flux_cen, flux_sat = h2fm.halos2map.halos2map(cen,ns,nsmean,sat) 
-        
+    #    intensity, flux_cen, flux_sat = h2fm.halos2map.halos2map(cen,ns,nsmean,sat)
+    pcen,mcen,fcen,nsat,psat,msat,fsat,lcen,lsat = h2fm.halos2sources.halos2sources(cen,ns,nsmean,sat)
+    intensity, flux_cen, flux_sat                = h2fm.sources2map.sources2map(pcen,mcen,fcen,nsat,
+                                                                                psat,msat,fsat,lcen,lsat)       
+
     # Write map
     ns_str   = str(h2fm.params.nside)
     nu_str   = str(int(h2fm.params.freq_list[inu_map]))    
