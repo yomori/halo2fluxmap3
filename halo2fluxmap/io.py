@@ -20,7 +20,9 @@ def read_catalog():
     for i in range(params.Nreads):  
 
         ceni = get_catalog(i)
+        report_local('read',i,np.shape(ceni)[0])
         ceni = cull_catalog(ceni)
+        report_local('culled',i,np.shape(ceni)[0])
         ceni = shuffle_catalog(ceni)
 
         if i==0:
