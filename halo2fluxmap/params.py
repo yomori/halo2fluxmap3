@@ -3,9 +3,12 @@ inputfile    = 'input_halos.pksc'
 outbase      = 'output_map'
 
 verbose      = 2
-
+LightIO      = True
 Nreads       = 1
 format       = 'pksc'
+octx         = 2
+octy         = 2
+octz         = 2
 
 justify      = 25*' '
 serial       = 0

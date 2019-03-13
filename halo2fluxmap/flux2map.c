@@ -2585,7 +2585,7 @@ static PyObject *__pyx_pf_12halo2fluxmap_8flux2map_2makemapflat(CYTHON_UNUSED Py
  *         x = x[dm]
  *         F = F[dm]             # <<<<<<<<<<<<<<
  * 
- *         pixind = np.floor((x+fov/2)/dp) + nside*np.floor((y+fov/2)/dp)
+ *         pixind = np.floor((y+fov/2)/dp) + nside*np.floor((x+fov/2)/dp)
  */
   __pyx_t_3 = PyObject_GetItem(((PyObject *)__pyx_v_F), __pyx_v_dm); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 44, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
@@ -2596,7 +2596,7 @@ static PyObject *__pyx_pf_12halo2fluxmap_8flux2map_2makemapflat(CYTHON_UNUSED Py
   /* "halo2fluxmap/flux2map.pyx":46
  *         F = F[dm]
  * 
- *         pixind = np.floor((x+fov/2)/dp) + nside*np.floor((y+fov/2)/dp)             # <<<<<<<<<<<<<<
+ *         pixind = np.floor((y+fov/2)/dp) + nside*np.floor((x+fov/2)/dp)             # <<<<<<<<<<<<<<
  *         pixind = pixind.astype(int)
  * 
  */
@@ -2607,7 +2607,7 @@ static PyObject *__pyx_pf_12halo2fluxmap_8flux2map_2makemapflat(CYTHON_UNUSED Py
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_v_fov, __pyx_int_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_5 = PyNumber_Add(((PyObject *)__pyx_v_x), __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_t_5 = PyNumber_Add(((PyObject *)__pyx_v_y), __pyx_t_1); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   __pyx_t_1 = __Pyx_PyNumber_Divide(__pyx_t_5, __pyx_v_dp); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 46, __pyx_L1_error)
@@ -2666,7 +2666,7 @@ static PyObject *__pyx_pf_12halo2fluxmap_8flux2map_2makemapflat(CYTHON_UNUSED Py
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = __Pyx_PyNumber_Divide(__pyx_v_fov, __pyx_int_2); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_4);
-  __pyx_t_5 = PyNumber_Add(((PyObject *)__pyx_v_y), __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 46, __pyx_L1_error)
+  __pyx_t_5 = PyNumber_Add(((PyObject *)__pyx_v_x), __pyx_t_4); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 46, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_5);
   __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
   __pyx_t_4 = __Pyx_PyNumber_Divide(__pyx_t_5, __pyx_v_dp); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 46, __pyx_L1_error)
@@ -2730,7 +2730,7 @@ static PyObject *__pyx_pf_12halo2fluxmap_8flux2map_2makemapflat(CYTHON_UNUSED Py
 
   /* "halo2fluxmap/flux2map.pyx":47
  * 
- *         pixind = np.floor((x+fov/2)/dp) + nside*np.floor((y+fov/2)/dp)
+ *         pixind = np.floor((y+fov/2)/dp) + nside*np.floor((x+fov/2)/dp)
  *         pixind = pixind.astype(int)             # <<<<<<<<<<<<<<
  * 
  *         hmap = np.zeros(nside**2)

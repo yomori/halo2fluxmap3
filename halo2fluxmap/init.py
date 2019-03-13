@@ -20,6 +20,7 @@ def getparameters(filename):
     if 'folder'    in dict: params.folder    = dict['folder']
     if 'inputfile' in dict: params.inputfile = dict['inputfile']
     if 'outbase'   in dict: params.outbase   = dict['outbase']
+    if 'LightIO'   in dict: params.LightIO   = dict['LightIO']
 
     if 'H0'           in dict: params.H0           = dict['H0']
     if 'omegab'       in dict: params.omegab       = dict['omegab']
@@ -30,6 +31,9 @@ def getparameters(filename):
     if 'min_redshift' in dict: params.min_redshift = dict['min_redshift']
     if 'max_redshift' in dict: params.max_redshift = dict['max_redshift']
     if 'num_redshift' in dict: params.num_redshift = dict['num_redshift']
+    if 'octx'         in dict: params.octx         = dict['octx']
+    if 'octy'         in dict: params.octy         = dict['octy']
+    if 'octz'         in dict: params.octz         = dict['octz']
 
     if 'box_size' in dict: params.box_size = dict['box_size']
     if 'fov'      in dict: params.fov      = dict['fov']

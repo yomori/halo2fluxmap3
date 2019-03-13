@@ -52,15 +52,15 @@ def halos2map(cen,ns,nsmean,sat):
 	total_flux=np.zeros(1)
 
 	if params.flat==1:				
-		thetaxc = np.abs(np.arctan(cen[:,0]/cen[:,2]))*2
-		thetayc = np.abs(np.arctan(cen[:,1]/cen[:,2]))*2	
+		thetaxc = np.abs(np.arctan(cen[:,1]/cen[:,0]))*2
+		thetayc = np.abs(np.arctan(cen[:,2]/cen[:,0]))*2	
 		dmc = [(thetaxc < np.radians(params.fov)) & (thetayc < np.radians(params.fov))
-		       & (cen[:,2]>0)]
+		       & (cen[:,0]>0)]
 
-		thetaxs = np.abs(np.arctan(sat[:,0]/sat[:,2]))*2
-		thetays = np.abs(np.arctan(sat[:,1]/sat[:,2]))*2	
+		thetaxs = np.abs(np.arctan(sat[:,1]/sat[:,0]))*2
+		thetays = np.abs(np.arctan(sat[:,2]/sat[:,0]))*2	
 		dms = [(thetaxs < np.radians(params.fov)) & (thetays < np.radians(params.fov))
-		       & (sat[:,2]>0)]
+		       & (sat[:,0]>0)]
 
 		total_fluxl = cen_fluxes[dmc].sum() + sat_fluxes[dms].sum() # fiducial units
 	else:

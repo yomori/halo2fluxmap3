@@ -81,7 +81,6 @@ def distribute_catalog(data):
 
 def shuffle_catalog(data):
 
-#    report('Shuffling...',2)
     np.random.seed(13579) #added seed or each process does its own permutation
                           # this was an error before and halos were double counted
     p = np.random.permutation(np.shape(data)[0])
@@ -104,12 +103,27 @@ def cull_catalog(data):
     data = data[dm]    
 
     if params.flat == 1:
-        thetaxc = np.abs(np.arctan(data[:,0]/data[:,2]))*2
-        thetayc = np.abs(np.arctan(data[:,1]/data[:,2]))*2	
+        thetaxc = np.abs(np.arctan(data[:,1]/data[:,0]))*2
+        thetayc = np.abs(np.arctan(data[:,2]/data[:,0]))*2	
         dm = [(thetaxc < np.radians(params.fov)) & (thetayc < np.radians(params.fov))
-              & (data[:,2]>0)]
+              & (data[:,0]>0)]
         data = data[dm]
-        
+    else:        
+        xcmin=-1e10; xcmax=1e10; ycmin=-1e10; ycmax=1e10; zcmin=-1e10; zcmax=1e10;
+
+        if params.octx == 0: xcmin=-1e10; xcmax=0
+        if params.octy == 0: ycmin=-1e10; ycmax=0
+        if params.octz == 0: zcmin=-1e10; zcmax=0
+
+        if params.octx == 1: xcmin=0; xcmax=1e10
+        if params.octy == 1: ycmin=0; ycmax=1e10
+        if params.octz == 1: zcmin=0; zcmax=1e10
+
+        dm = [ (data[:,0] > xcmin) & (data[:,0] < xcmax) & 
+               (data[:,1] > ycmin) & (data[:,1] < ycmax) & 
+               (data[:,2] > zcmin) & (data[:,2] < zcmax) ] 
+        data = data[dm]
+
     return data
 
 def jiang_shmf(m,M_halo):	

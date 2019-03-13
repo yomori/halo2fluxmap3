@@ -44,6 +44,11 @@ def ReadPkscLightCone(i):
     Nread = end-start
 
     outnum  = 10 #7 floats per halo
+    massindex = 6
+    if params.LightIO: 
+        outnum = 4
+        massindex = 3
+
     npkdata = Nread*outnum
 
     pkfile.seek( (3+start*outnum)*4 ,os.SEEK_SET)  #12 byte header plus array
@@ -52,13 +57,13 @@ def ReadPkscLightCone(i):
     pkfile.close()
 
     rho       = 2.775e11*params.omegam*params.h**2
-    halos.data[:,6] = (4*(np.pi)/3)*(halos.data[:,6]**3)*rho # convert 6 from RTH to M
+    halos.data[:,massindex] = (4*(np.pi)/3)*(halos.data[:,massindex]**3)*rho # convert 6 from RTH to M
 
     halos.data = np.column_stack((
         halos.data[:,0], # x in comoving MPC
         halos.data[:,1], # y in comoving MPC
         halos.data[:,2], # z in comoving MPC
-        halos.data[:,6], # mass in Solar Mass (no h anyhere)!
+        halos.data[:,massindex], # mass in Solar Mass (no h anyhere)!
     ))            
 
     return halos

@@ -43,7 +43,7 @@ def makemapflat(np.ndarray x,np.ndarray y, np.ndarray z,np.ndarray F, nside,fov)
         x = x[dm]
         F = F[dm]
 
-        pixind = np.floor((x+fov/2)/dp) + nside*np.floor((y+fov/2)/dp) 
+        pixind = np.floor((y+fov/2)/dp) + nside*np.floor((x+fov/2)/dp) 
         pixind = pixind.astype(int)
         
         hmap = np.zeros(nside**2)

@@ -2,7 +2,7 @@
 #from   utils import *
 #from halocat import *
 #from globals import *
-
+import mpi4py 
 import sys
 
 import healpy as hp
@@ -10,22 +10,26 @@ import healpy as hp
 from   utils   import *
 from   halocat import *
 
+def report_local(string,i,Ncen):
+        if params.rank == 0:
+                sys.stdout.write('\n '+params.justify+str(i+1)+' of '+str(params.Nreads)+
+                                 ' chunks '+string+' Ncen = '+str(Ncen))
+                sys.stdout.flush()
+        
 def read_catalog():
     for i in range(params.Nreads):  
-#    for i in range(1):  
+
         ceni = get_catalog(i)
         ceni = cull_catalog(ceni)
         ceni = shuffle_catalog(ceni)
+
         if i==0:
             cen = distribute_catalog(ceni)
         else:
             cen  = np.concatenate((cen,distribute_catalog(ceni)))
             
-        if params.rank == 0:
-            sys.stdout.write('\r '+params.justify+str(i+1)+' of '+str(params.Nreads)+
-                             ' chunks read, shuffled, and culled. Ncen = '+
-                             str(np.shape(cen)[0]))
-            sys.stdout.flush()
+        report_local('read, shuffled, and culled',i,np.shape(cen)[0])
+
     if params.rank == 0: print ''
  
     del ceni
