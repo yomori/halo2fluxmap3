@@ -23,8 +23,6 @@ def halos2sources(cen,nsat,nsatmean,sat):
 	mcen = cen[:,3] # Mass
 	msat = flux2map.cen2sat_masses(np.column_stack((mcen,nsat)),nsat,nsatmean) # Parent Mass and Nsat
 
-        print 'central min and max mass: ',mcen.min(),mcen.max()
-
 	#CALCULATE FLUX FROM CENTRALS AND SATELLITES
 	if params.numdens==0:
 		if (params.LM=="Planck2013"):
