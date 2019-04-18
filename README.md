@@ -1,6 +1,6 @@
-To install:
+The original repo can be found here: https://github.com/marcelo-alvarez/halo2fluxmap
 
-    ./install.sh
+This version is modified so that it run on python 3 instead of 2.
 
 To run example:
 
