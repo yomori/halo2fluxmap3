@@ -95,15 +95,19 @@ def cen2sat_masses(np.ndarray cen, np.ndarray n, np.ndarray nmean):
 
     # Make function of mass fraction as a function of number of satellites
     muofn = make_muofn()
-
+    
     cdef int count = 0
     cdef int i
     for icen in range(N_cen):
         N_sat    = n[icen]
         N_satbar = nmean[icen]
         M_cen    = cen[icen,0]
+        #print(Nsatbar)
+        #print(N_sat)
         Rank = uniform(0.0,N_satbar,N_sat)
-        mu   = muofn(Rank)
+
+        #print(Rank)
+        mu   = muofn(Rank) 
 
         for isat in range(N_sat):
             msat[count+isat] = mu[isat] * M_cen

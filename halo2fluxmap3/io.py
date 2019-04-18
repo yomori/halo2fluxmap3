@@ -62,7 +62,7 @@ def writemap(base,intensity):
         
     if params.flat==0:
         filename = base+'.fits' 
-        hp.write_map(filename,intensity)
+        hp.write_map(filename,intensity,overwrite=True)
 
     elif params.flat==1:
         filename = base+'.map' 

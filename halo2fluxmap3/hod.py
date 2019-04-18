@@ -180,7 +180,7 @@ def make_muofn():
 
 		return dns_dm
 
-	mu = np.logspace(np.log10(1e-6),0,1000)
+	mu = np.logspace(np.log10(1e-10),3,10000)
 	n  = np.zeros(len(mu))
 	for i in range(len(mu)):
 		n[i], foo = scipy.integrate.quad(integrand,np.log(mu[i]),0.)

@@ -6,4 +6,5 @@ from . import globals
 from . import init
 from . import io
 from . import halos2sources
+from . import sources2map
 #import flux2map
