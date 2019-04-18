@@ -1,9 +1,9 @@
-import flux2map
-import params
+from  halo2fluxmap3 import flux2map
+from  halo2fluxmap3 import params
 
 import numpy      as np
 
-from   fluxmodel  import *
+from  halo2fluxmap3.fluxmodel import *
 
 def halos2sources(cen,nsat,nsatmean,sat):
 	import time

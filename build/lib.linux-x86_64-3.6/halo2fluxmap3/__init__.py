@@ -1,12 +1,11 @@
-import init
-import utils
-import io
-import hod
-import fluxmodel
-import halos2sources
-import sources2map
-
-import params
+#import init
+from . import utils
+from . import io
+from . import hod
+from . import fluxmodel
+from . import halos2sources
+from . import sources2map
+from . import params
 
 #from .init      import *
 #from .utils     import *

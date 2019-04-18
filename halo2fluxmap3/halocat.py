@@ -1,6 +1,6 @@
 import os
 import datetime
-import params
+from .params import *
 
 import numpy              as np
 import pylab              as pl

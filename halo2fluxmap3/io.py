@@ -7,8 +7,8 @@ import sys
 
 import healpy as hp
 
-from   utils   import *
-from   halocat import *
+from  .utils   import *
+from  .halocat import *
 
 def report_local(string,i,Ncen):
         if params.rank == 0:
