@@ -115,7 +115,7 @@ def clnm2r(c,lnm):
 def populate_centrals(cen,ns):
 
 	from mpi4py import MPI
-	import flux2map
+	from halo2fluxmap3 import flux2map
 
 	t1=time.time()
 

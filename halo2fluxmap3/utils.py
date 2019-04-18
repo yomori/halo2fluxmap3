@@ -75,8 +75,8 @@ def distribute_catalog(data):
     if(params.rank==params.size-1): end=N
 
     Nlocal = end - start
-
-    return data[start:end,:]
+   
+    return data[int(start):int(end),:]
 
 
 def shuffle_catalog(data):
@@ -91,23 +91,26 @@ def cull_catalog(data):
     
     r = np.sqrt(data[:,0]**2+data[:,1]**2+data[:,2]**2)
     redshift = r2z(r)
-    
+    #print(data.shape)
     # filtering halos in the sphere of r<box/2 and z<max_redshift
-    dm = ([
+    dm = np.where(
             (redshift  > params.min_redshift ) & 
             (redshift  < params.max_redshift ) & 
             (  abs(r)  < (params.box_size)/2 ) & 
             (data[:,3] > params.min_mass     )
-            ])    
-
-    data = data[dm]    
+            )[0]   
+    #print(data[dm,:])
+    data = data[dm,:]
+    print(data.shape)    
 
     if params.flat == 1:
         thetaxc = np.abs(np.arctan(data[:,1]/data[:,0]))*2
         thetayc = np.abs(np.arctan(data[:,2]/data[:,0]))*2	
-        dm = [(thetaxc < np.radians(params.fov)) & (thetayc < np.radians(params.fov))
-              & (data[:,0]>0)]
-        data = data[dm]
+        dm = np.where((thetaxc < np.radians(params.fov)) & (thetayc < np.radians(params.fov))
+              & (data[:,0]>0))[0]
+        data = data[dm,:]
+        print(data.shape)
+        print ('aaaaaaaa')
     else:        
         xcmin=-1e10; xcmax=1e10; ycmin=-1e10; ycmax=1e10; zcmin=-1e10; zcmax=1e10;
 
@@ -119,11 +122,13 @@ def cull_catalog(data):
         if params.octy == 1: ycmin=0; ycmax=1e10
         if params.octz == 1: zcmin=0; zcmax=1e10
 
-        dm = [ (data[:,0] > xcmin) & (data[:,0] < xcmax) & 
+        dm = np.where( (data[:,0] > xcmin) & (data[:,0] < xcmax) & 
                (data[:,1] > ycmin) & (data[:,1] < ycmax) & 
-               (data[:,2] > zcmin) & (data[:,2] < zcmax) ] 
-        data = data[dm]
-
+               (data[:,2] > zcmin) & (data[:,2] < zcmax) )[0]
+        #print(data[dm,:])
+        data = data[dm,:]
+        print(data.shape)
+        print("sssss")
     return data
 
 def jiang_shmf(m,M_halo):	

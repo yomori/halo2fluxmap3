@@ -13,7 +13,7 @@ from  .halocat import *
 def report_local(string,i,Ncen):
         if params.rank == 0:
                 sys.stdout.write('\n '+params.justify+str(i+1)+' of '+str(params.Nreads)+
-                                 ' chunks '+string+' Ncen = '+str(Ncen))
+                                 ' chunks '+string+' Ncen = '+str(Ncen)+'\n')
                 sys.stdout.flush()
         
 def read_catalog():

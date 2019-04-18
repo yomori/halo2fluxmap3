@@ -1,5 +1,6 @@
-#import flux2map.cpython-36m-x86_64-linux-gnu.so
-from .globals import *
+from halo2fluxmap3 import flux2map
+from halo2fluxmap3 import globals
+#from .globals import *
 
 from .utils   import *
 

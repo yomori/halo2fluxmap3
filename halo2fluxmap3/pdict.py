@@ -41,12 +41,12 @@ class pdict( dict ):
             line = s[0]
             s = line.split('\\')
             if len(s) > 1:
-                old = string.join([old, s[0]])
+                old = old.join(s[0])
                 continue
             else:
-                line = string.join([old, s[0]])
+                line = old.join(s[0])
                 old = ''
-            for i in xrange(len(line)):
+            for i in range(len(line)):
                 if line[i]!=' ':
                     line = line[i:]
                     break

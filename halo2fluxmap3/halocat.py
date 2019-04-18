@@ -1,6 +1,6 @@
 import os
 import datetime
-from .params import *
+import halo2fluxmap3.params as params
 
 import numpy              as np
 import pylab              as pl

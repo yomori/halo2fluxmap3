@@ -2,7 +2,7 @@
 import numpy             as np
 import healpy            as hp
 import matplotlib.pyplot as plt
-import halo2fluxmap      as h2fm
+import halo2fluxmap3 as  h2fm
 
 import mpi4py.rc
 import datetime
@@ -11,7 +11,7 @@ import psutil
 
 from   scipy.ndimage.filters import gaussian_filter
 
-h2fm.init.initialize('params.txt')
+h2fm.init.initialize('example/params.txt')
 
 h2fm.utils.report('Reading, Shuffling, Culling Catalogue',2)
 

@@ -1,7 +1,7 @@
-import flux2map
-import globals
+#import flux2map.cpython-36m-x86_64-linux-gnu.so
+from .globals import *
 
-from utils   import *
+from .utils   import *
 
 def printbounds(a):
 	print(a.min(),a.max())

@@ -1,7 +1,7 @@
 import time
 import scipy
 
-from utils   import *
+from .utils   import *
 
 def hod(M): 
 

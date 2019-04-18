@@ -1,13 +1,13 @@
 import mpi4py.rc
 import datetime
 
-from   pdict     import *
+from   .pdict     import *
 from   cosmolopy import fidcosmo
 
 def getparameters(filename):
     
-    import params
-    import globals
+    import halo2fluxmap3.params as params
+    import halo2fluxmap3.globals as globals
 
     dict=pdict()
     dict.read_from_file(filename)
