@@ -34,6 +34,8 @@ print(tabulate([['Maximum chi [Mpc/h]'    , chimax],
                 ['Lightcone origin'       , LightConeOrigin]],
                 headers=['Parameter', 'Value']))
 
+print("---------------------------------------")
+
 hlists = [line.rstrip('\n') for line in open(list_hlist)]
 Nsnaps = len(hlists)
 alist  = np.zeros(Nsnaps)
