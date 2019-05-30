@@ -1,87 +1,120 @@
+import pandas as pd 
+import pickle
+#import cibmapping
 import numpy as np
 import camb 
 from camb import model, initialpower
 from tabulate import tabulate
 
+#shellnum   = int(sys.argv[1])
+chilow = 3550#float(sys.argv[1])#shellwidth*(shellnum+0)
+chiupp = 3700#float(sys.argv[2])#shellwidth*(shellnum+1)
+
+nsideout   = 2048
+origin     = [0,0,0]
+shellwidth = 50       # in Mpc/h 
+boxL       = 1000     # in Mpc/h
+maxchi     = 9000     # in Mpc/h --> 9000~z=6
+minchi     = 5000     # in Mpc/h --> 5000~z=2
+
+alist      = '/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_002/hlist/alist'
+dir_hlist  = '/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_002/hlist/' #Path where the hlist files are
+#dir_hlist  = '/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_001/ROCKSTAR_HALOS/unitsims.ft.uam.es/DATABASE/UNITSIMS_GADGET/ROCKSTAR_HALOS/fixedAmp_001/hlist/' #Path where the hlist files are
+dir_out    = '/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_002/cib/'
+chunk_size = 500000 #size of chunks relies on your available memory #---> 323 iterations for 1 block
+
+#--------------------------------------------------
+
 h          = 0.6774
-
-zmax       = 10.0   # maximum redshift to make the halo lightcone
-boxL       = 1000   # length of simulation box in Mpc/h
-dL         = 50     # thickness of shell to use in Mpc/h
-nside      = 8192   # output healpix map resolution
-list_hlist = '/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_001/ROCKSTAR_HALOS/unitsims.ft.uam.es/DATABASE/UNITSIMS_GADGET/ROCKSTAR_HALOS/fixedAmp_001/hlist/list_hlist'
-LightConeOrigin = np.array([0,0,0]) # where to place the origin of lightcone
-
-#-------------------------------------------------
-# Doing comoving distance calculations
 pars      = camb.CAMBparams()
-pars.set_cosmology(H0=67.74, ombh2=0.02230 , omch2=0.1188, tau=0.066 )
 pars.InitPower.set_params(ns=0.9667,As=2.142e-9,pivot_scalar=0.05)
+pars.set_cosmology(H0=67.74, ombh2=0.02230 , omch2=0.1188, tau=0.066 )
 pars.set_for_lmax(2000, lens_potential_accuracy=1)
 results   = camb.get_results(pars)
 
-chimax    = results.comoving_radial_distance(zmax)*h
-Ntess     = int(np.ceil(chimax/boxL))
-Nslices   = int(np.ceil(chimax/dL))
+zmid      = results.redshift_at_comoving_radial_distance(0.5*(chilow+chiupp)/h)
+#chi    = results.comoving_radial_distance(2)*h
 
-chi_edges = (np.arange(Nslices+1)*dL)*h
-#-------------------------------------------------
+def getnearestsnap(dir_hlist,zmid):
+    import glob 
+    files = glob.glob(dir_hlist+"*.bz2")
+    asnap = [np.float(line.rstrip('\n')[-16:-9]) for line in files]
+    zsnap = 1./np.asarray(asnap)-1.
+    return files[np.argmin(np.abs(zsnap-zmid))]
 
-print(tabulate([['Maximum chi [Mpc/h]'    , chimax],
-                ['Box size [Mpc/h]'       , boxL],
-                ['Number of tesselations' , Ntess],
-                ['Number of slices'       , Nslices],
-                ['Lightcone origin'       , LightConeOrigin]],
-                headers=['Parameter', 'Value']))
+hlist_file = getnearestsnap(dir_hlist,zmid)
 
-print("---------------------------------------")
+reader     = pd.read_csv(hlist_file,\
+	                     chunksize = chunk_size,\
+	                     engine    = 'c',\
+	                     delim_whitespace=True,\
+	                     skiprows  = 65,#lambda i: i>0 and random.random() > 0.0001,\
+	                     usecols   = [0,17,18,19,60,62],\
+	                     names     = ['scale','px','py','pz','Mpeak','Vpeak']\
+	                     #nrows     = 500000
+	                     )    
 
-hlists = [line.rstrip('\n') for line in open(list_hlist)]
-Nsnaps = len(hlists)
-alist  = np.zeros(Nsnaps)
-zlist  = np.zeros(Nsnaps)
-for i in range(0,Nsnaps):
-    tmp = hlists[i]
-    alist[i] = float(tmp[tmp.index("_")+1:-5])
-    zlist[i] = float(1/(alist[i])-1.)
-    print("%s a=%.5f z=%.5f"%(hlists[i],alist[i],zlist[i]))
+ret        = np.zeros(hp.nside2npix(nsideout))
 
-halo_phi = np.array([])
-halo_tht = np.array([])
+ntiles = int(np.ceil(maxchi/boxL))
 
-#if(np.max(zlist<zmax)):
-#    raise Exception("Halo catalog didn't reach requested zmax")
+def checkslicehit(chilow,chihigh,xx,yy,zz):
+    # doing pre-selection so that we're not loading non-intersecting blocks 
+    bvx=np.array([0,boxL,boxL,0,0,boxL,boxL,0])
+    bvy=np.array([0,0,boxL,boxL,0,0,boxL,boxL])
+    bvz=np.array([0,0,0,0,boxL,boxL,boxL,boxL])
+    sx  = (bvx - origin[0] + boxL * xx);
+    sy  = (bvy - origin[1] + boxL * yy);
+    sz  = (bvz - origin[2] + boxL * zz);
+    r   = np.sqrt(sx*sx + sy*sy + sz*sz)
+    if ( (np.all(chilow<r)) | (np.all(chihigh<r)) ):
+        return False
+    else:
+        return True
 
-for si in range(0,Nslices):
+totslicehit=0
+for xx in range(-ntiles,ntiles+1):
+    for yy in range(-ntiles,ntiles+1):
+        for zz in range(-ntiles,ntiles+1):
 
-    chilow  = chi_edges[si]   # lower end of zbin
-    chihigh = chi_edges[si+1] # upper end of zbin
+            print("%d %d %d"%(xx,yy,zz))
+        
+            slicehit = checkslicehit(chilow,chiupp,xx,yy,zz)
+            #slicehit = True
+            if slicehit==True:
+                totslicehit+=1
+                print('slicehit')
+                #for i in range(0,1):
+                for chunk in reader:
+                    #px  = np.random.rand(50000)*1000
+                    #py  = np.random.rand(50000)*1000
+                    #pz  = np.random.rand(50000)*1000
+                    #sx  = (px - origin[0] + boxL * xx);
+                    #sy  = (py - origin[1] + boxL * yy);
+                    #sz  = (pz - origin[2] + boxL * zz);
+                    
+                    sx  = np.array([chunk['px'] - origin[0] + boxL * xx])[0];
+                    sy  = np.array([chunk['py'] - origin[1] + boxL * yy])[0];
+                    sz  = np.array([chunk['pz'] - origin[2] + boxL * zz])[0];
+                    r   = np.sqrt(sx*sx + sy*sy + sz*sz)
+                    idx = np.where((r>chilow) & (r<chiupp))
+                    print(idx)
+                    #vec =np.zeros((r.shape[idx]))
+                    #sx  = sx[idx]/r[idx]
+                    #sy  = sy[idx]/r[idx]
+                    #sz  = sz[idx]/r[idx]
+                    
+                    vec       = np.array(np.c_[sx[idx]/r[idx],sy[idx]/r[idx],sz[idx]/r[idx]])
+                    tht,phi   = hp.vec2ang(vec)
+                    pix       = hp.ang2pix(nsideout,tht,phi)
 
-    print("processing zslice %d/%d, chi range [%.2f/%.2f]"%(si+1,Nslices,chilow,chihigh))
+                    IRflux    = 1#cibmapping.halo2irflux(chunk['z'],chunk['px'],chunk['py'],chunk['pz'],chunk['Mpeak'],chunk['vMpeak'])
+                    
+                    ret[pix] += IRflux
 
-    px,py,pz,Mh = np.loadtxt(hlists[i],unpack=True,skiprows=100)
+print(totslicehit)
+hp.write_map(dir_out+'/cibflux_%.5f.fits'%zmid,ret,overwrite=True)
 
-    ret         = np.zeros(hp.nside2npix(nside))
 
-    if chilow<chimax:
 
-        print("Adding halos")
 
-        for ti in range(-Ntess,Ntess+1):
-            for tj in range(-Ntess,Ntess+1):
-                for tk in range(-Ntess,Ntess+1):
-                    vec      = np.zeros((Mh.shape[0],3))
-                    vec[:,0] = (px - LightConeOrigin[0] + boxL * ti);
-                    vec[:,1] = (py - LightConeOrigin[1] + boxL * tj);
-                    vec[:,2] = (pz - LightConeOrigin[2] + boxL * tk);
-                    r        = np.sqrt(vec[:,0]*vec[:,0] + vec[:,1]*vec[:,1] + vec[:,2]*vec[:,2])
-                    vec[:,0]  /= r
-                    vec[:,1]  /= r
-                    vec[:,2]  /= r
-                    tht,phi  = hp.vec2ang(vec)
-                    #ra,dec   = tp2rd(tht,phi)
-
-                    halo_tht = np.concatenate([halo_tht,tht])
-                    halo_phi = np.concatenate([halo_phi,phi])
-        pix = hp.ang2pix(nside,halo_tht,halo_phi)
-        ret[pix]=1 
