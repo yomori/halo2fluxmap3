@@ -44,16 +44,19 @@ def getnearestsnap(dir_hlist,zmid):
 
 hlist_file = getnearestsnap(dir_hlist,zmid)
 
-reader     = pd.read_csv(hlist_file,\
+# num of lines = 175357379
+'''
+reader     = pd.read_csv('hlist_0.09140.list',\
+                         #hlist_file,\
 	                     chunksize = chunk_size,\
 	                     engine    = 'c',\
 	                     delim_whitespace=True,\
-	                     skiprows  = 65,#lambda i: i>0 and random.random() > 0.0001,\
+	                     skiprows  = 65,\
 	                     usecols   = [0,17,18,19,60,62],\
 	                     names     = ['scale','px','py','pz','Mpeak','Vpeak']\
 	                     #nrows     = 500000
 	                     )    
-
+'''
 ret        = np.zeros(hp.nside2npix(nsideout))
 
 ntiles = int(np.ceil(maxchi/boxL))
@@ -85,6 +88,34 @@ for xx in range(-ntiles,ntiles+1):
                 totslicehit+=1
                 print('slicehit')
                 #for i in range(0,1):
+                
+                '''
+                reader     = pd.read_csv('/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_002/hlist/hlist_0.09140.list',\
+                         #hlist_file,\
+                         chunksize = chunk_size,\
+                         engine    = 'c',\
+                         delim_whitespace=True,\
+                         skiprows  = 65,\
+                         usecols   = [0,17,18,19,60,62],\
+                         names     = ['scale','px','py','pz','Mpeak','Vpeak']\
+                         #nrows     = 500000
+                         ) 
+                '''
+                reader     = pd.read_csv('hlist_0.33030.list_lite',\
+                         #hlist_file,\
+                         chunksize = chunk_size,\
+                         #dtype     = {'scale': np.float64, 'px': np.float64, 'py': np.float64, 'pz': np.float64, 'Mpeak': np.float64, 'Vpeak': np.float64},\
+                         #engine    = 'c',\
+                         #delim_whitespace=True,\
+                         #skiprows  = 1,\
+                         #usecols   = [0,1,2,3,4,5],\
+                         #names     = ['scale','px','py','pz','Mpeak','Vpeak'],\
+                         #low_memory=False\
+                         #nrows     = 500000
+                         )    
+                
+
+
                 for chunk in reader:
                     #px  = np.random.rand(50000)*1000
                     #py  = np.random.rand(50000)*1000
@@ -103,7 +134,7 @@ for xx in range(-ntiles,ntiles+1):
                     #sx  = sx[idx]/r[idx]
                     #sy  = sy[idx]/r[idx]
                     #sz  = sz[idx]/r[idx]
-                    
+                    #vec       = np.array(np.c_[sx/r,sy/r,sz/r])
                     vec       = np.array(np.c_[sx[idx]/r[idx],sy[idx]/r[idx],sz[idx]/r[idx]])
                     tht,phi   = hp.vec2ang(vec)
                     pix       = hp.ang2pix(nsideout,tht,phi)
