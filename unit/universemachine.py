@@ -65,7 +65,7 @@ def sfr2irlum(Mstar,SFR):
 
 def halo2irflux(z,chi,Mpeak,vMpeak):
     #parallelize this part
-    chi    = z2chi(z)
+    #chi    = z2chi(z)
     Mstar  = Mpeak2Mstar(z,Mpeak)
     SFR    = vMpeak2SFR(z,vMpeak)
     LIR    = sfr2irlum(Mstar,SFR)
