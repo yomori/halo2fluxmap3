@@ -33,7 +33,8 @@ pars.set_cosmology(H0=67.74, ombh2=0.02230 , omch2=0.1188, tau=0.066 )
 pars.set_for_lmax(2000, lens_potential_accuracy=1)
 results   = camb.get_results(pars)
 
-zmid      = results.redshift_at_comoving_radial_distance(0.5*(chilow+chiupp)/h)
+chmid     = 0.5*(chilow+chiupp)
+zmid      = results.redshift_at_comoving_radial_distance(chimid/h)
 #chi    = results.comoving_radial_distance(2)*h
 
 def getnearestsnap(dir_hlist,zmid):
@@ -122,7 +123,7 @@ for xx in range(-ntiles,ntiles+1):
                     idx = np.where((r>chilow) & (r<chiupp))[0]
 
                     pix     = hp.vec2pix(nsideout,sx[idx]/r[idx],sy[idx]/r[idx],sz[idx]/r[idx])
-                    IRflux  = um.halo2irflux(z,Mpeak,vMpeak)
+                    IRflux  = um.halo2irflux(zmid,chimid,Mpeak,Vpeak)
                     q       = np.arange(np.amax(pix)+1)
                     ret[q]  = ret[q] + np.bincount(pix, weights=IRflux)
 
