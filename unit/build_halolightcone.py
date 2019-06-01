@@ -5,6 +5,7 @@ import numpy as np
 import camb 
 from camb import model, initialpower
 from tabulate import tabulate
+#import universemachine as um
 
 #shellnum   = int(sys.argv[1])
 chilow = 3550#float(sys.argv[1])#shellwidth*(shellnum+0)
@@ -21,7 +22,7 @@ alist      = '/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_002/hlist/ali
 dir_hlist  = '/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_002/hlist/' #Path where the hlist files are
 #dir_hlist  = '/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_001/ROCKSTAR_HALOS/unitsims.ft.uam.es/DATABASE/UNITSIMS_GADGET/ROCKSTAR_HALOS/fixedAmp_001/hlist/' #Path where the hlist files are
 dir_out    = '/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_002/cib/'
-chunk_size = 500000 #size of chunks relies on your available memory #---> 323 iterations for 1 block
+chunk_size = 5000000 #size of chunks relies on your available memory #---> 323 iterations for 1 block
 
 #--------------------------------------------------
 
@@ -75,6 +76,31 @@ def checkslicehit(chilow,chihigh,xx,yy,zz):
     else:
         return True
 
+reader     = pd.read_csv('hlist_0.33030.list_lite',\
+                         #hlist_file,\
+                         #chunksize = chunk_size,\
+                         #dtype     = {'scale': np.float64, 'px': np.float64, 'py': np.float64, 'pz': np.float64, 'Mpeak': np.float64, 'Vpeak': np.float64},\
+                         #engine    = 'c',\
+                         #delim_whitespace=True,\
+                         #skiprows  = 1,\
+                         #usecols   = [0,1,2,3,4,5],\
+                         #names     = ['scale','px','py','pz','Mpeak','Vpeak'],\
+                         #low_memory=False\
+                         #nrows     = 500000
+                         )   
+
+ppx   = reader['px'].values
+ppy   = reader['py'].values
+ppz   = reader['pz'].values
+a     = reader['scale'].values
+Mpeak = reader['Mpeak'].values
+Vpeak = reader['Vpeak'].values
+
+z     = 1./a-1.
+del a
+
+ret        = np.zeros(hp.nside2npix(nsideout))
+
 totslicehit=0
 for xx in range(-ntiles,ntiles+1):
     for yy in range(-ntiles,ntiles+1):
@@ -87,61 +113,18 @@ for xx in range(-ntiles,ntiles+1):
             if slicehit==True:
                 totslicehit+=1
                 print('slicehit')
-                #for i in range(0,1):
-                
-                '''
-                reader     = pd.read_csv('/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_002/hlist/hlist_0.09140.list',\
-                         #hlist_file,\
-                         chunksize = chunk_size,\
-                         engine    = 'c',\
-                         delim_whitespace=True,\
-                         skiprows  = 65,\
-                         usecols   = [0,17,18,19,60,62],\
-                         names     = ['scale','px','py','pz','Mpeak','Vpeak']\
-                         #nrows     = 500000
-                         ) 
-                '''
-                reader     = pd.read_csv('hlist_0.33030.list_lite',\
-                         #hlist_file,\
-                         chunksize = chunk_size,\
-                         #dtype     = {'scale': np.float64, 'px': np.float64, 'py': np.float64, 'pz': np.float64, 'Mpeak': np.float64, 'Vpeak': np.float64},\
-                         #engine    = 'c',\
-                         #delim_whitespace=True,\
-                         #skiprows  = 1,\
-                         #usecols   = [0,1,2,3,4,5],\
-                         #names     = ['scale','px','py','pz','Mpeak','Vpeak'],\
-                         #low_memory=False\
-                         #nrows     = 500000
-                         )    
-                
-
 
                 for chunk in reader:
-                    #px  = np.random.rand(50000)*1000
-                    #py  = np.random.rand(50000)*1000
-                    #pz  = np.random.rand(50000)*1000
-                    #sx  = (px - origin[0] + boxL * xx);
-                    #sy  = (py - origin[1] + boxL * yy);
-                    #sz  = (pz - origin[2] + boxL * zz);
-                    
-                    sx  = np.array([chunk['px'] - origin[0] + boxL * xx])[0];
-                    sy  = np.array([chunk['py'] - origin[1] + boxL * yy])[0];
-                    sz  = np.array([chunk['pz'] - origin[2] + boxL * zz])[0];
+                    sx  = ppx - origin[0] + boxL * xx
+                    sy  = ppy - origin[1] + boxL * yy
+                    sz  = ppz - origin[2] + boxL * zz
                     r   = np.sqrt(sx*sx + sy*sy + sz*sz)
-                    idx = np.where((r>chilow) & (r<chiupp))
-                    print(idx)
-                    #vec =np.zeros((r.shape[idx]))
-                    #sx  = sx[idx]/r[idx]
-                    #sy  = sy[idx]/r[idx]
-                    #sz  = sz[idx]/r[idx]
-                    #vec       = np.array(np.c_[sx/r,sy/r,sz/r])
-                    vec       = np.array(np.c_[sx[idx]/r[idx],sy[idx]/r[idx],sz[idx]/r[idx]])
-                    tht,phi   = hp.vec2ang(vec)
-                    pix       = hp.ang2pix(nsideout,tht,phi)
+                    idx = np.where((r>chilow) & (r<chiupp))[0]
 
-                    IRflux    = 1#cibmapping.halo2irflux(chunk['z'],chunk['px'],chunk['py'],chunk['pz'],chunk['Mpeak'],chunk['vMpeak'])
-                    
-                    ret[pix] += IRflux
+                    pix     = hp.vec2pix(nsideout,sx[idx]/r[idx],sy[idx]/r[idx],sz[idx]/r[idx])
+                    IRflux  = um.halo2irflux(z,Mpeak,vMpeak)
+                    q       = np.arange(np.amax(pix)+1)
+                    ret[q]  = ret[q] + np.bincount(pix, weights=IRflux)
 
 print(totslicehit)
 hp.write_map(dir_out+'/cibflux_%.5f.fits'%zmid,ret,overwrite=True)

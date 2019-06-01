@@ -2,7 +2,7 @@ import pandas as pd
 
 reader     = pd.read_csv('/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_002/hlist/hlist_0.33030.list',\
                          #hlist_file,\
-                         chunksize = 500000,\
+                         chunksize = 5000000,\
                          engine    = 'c',\
                          delim_whitespace=True,\
                          skiprows  = 65,\

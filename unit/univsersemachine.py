@@ -54,14 +54,20 @@ def Mpeak2Mstar(z,Mpeak):
 
     return Mstar
 
-def sfr2LIR(Mstar,SFR):
+def sfr2irlum(Mstar,SFR):
+	'''converts sfr to infrared luminosity assuming some UV escape fraction'''
 	rUV = 4.07*np.log(Mstar)-39.32
 	LIR = SFR/1e-10*10**(0.4*rUV)/(1+10**(0.4*rUV))
 	return LIR
 
-def halo2LIR(px,py,pz,z,Mpeak,vMpeak):
-	#parallelize this
-	Mstar = Mpeak2Mstar(z,Mpeak)
-	SFR   = vMpeak2SFR(z,vMpeak)
-	LIR   = fr2LIR(Mstar,SFR)
+def greybody():
 
+
+def halo2irflux(z,Mpeak,vMpeak):
+	#parallelize this
+	chi    = z2chi(z)
+	Mstar  = Mpeak2Mstar(z,Mpeak)
+	SFR    = vMpeak2SFR(z,vMpeak)
+	LIR    = sfr2irlum(Mstar,SFR)
+	irflux = irlum/4/np.pi/(chi**2)/(1+z) 
+    return irflux
