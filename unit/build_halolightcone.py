@@ -5,7 +5,7 @@ import numpy as np
 import camb 
 from camb import model, initialpower
 from tabulate import tabulate
-#import universemachine as um
+import universemachine as um
 
 #shellnum   = int(sys.argv[1])
 chilow = 3550#float(sys.argv[1])#shellwidth*(shellnum+0)
@@ -76,7 +76,7 @@ def checkslicehit(chilow,chihigh,xx,yy,zz):
     else:
         return True
 
-reader     = pd.read_csv('hlist_0.33030.list_lite',\
+reader     = pd.read_csv('/project2/chihway/sims/UNIT/UNITSIMS_GADGET/fixedAmp_002/hlist/hlist_0.33030.list_lite',\
                          #hlist_file,\
                          #chunksize = chunk_size,\
                          #dtype     = {'scale': np.float64, 'px': np.float64, 'py': np.float64, 'pz': np.float64, 'Mpeak': np.float64, 'Vpeak': np.float64},\
