@@ -6,6 +6,7 @@ import camb
 from camb import model, initialpower
 from tabulate import tabulate
 import universemachine as um
+import healpy as hp
 
 #shellnum   = int(sys.argv[1])
 chilow = 3550#float(sys.argv[1])#shellwidth*(shellnum+0)
