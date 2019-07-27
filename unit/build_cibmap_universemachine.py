@@ -13,7 +13,7 @@ from astropy.io import fits
 
 def greybody(zmid):
     zmid = 2.0
-    nu   = np.arange(40001)
+    nu   = np.arange(1001)
     nu   = nu*1e9
     zc      = 2.; sigc  = 2. ; alpha = 2.; beta  = 2.; nup = 4955e9
     kb      = 1.38064852e-23; Tdust = 34.0; h = 6.62607004e-34
@@ -116,8 +116,8 @@ pz       = halos['pos'][:,2][idx]
 del halos
 #------------------------------------------------------------------
 d    = fits.open('/project2/chihway/yuuki/repo/halo2fluxmap3/data/HFI_RIMO_R3.00.fits')
-fint  = np.arange(40001)
-trans = np.zeros((40001,5))
+fint  = np.arange(1101)
+trans = np.zeros((1101,5))
 c=0
 for freq in (143,217,353,545,857):
     f = d['BANDPASS_F%d'%freq].data['WAVENUMBER']*3e8*1e-7
