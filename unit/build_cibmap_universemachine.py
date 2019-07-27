@@ -5,7 +5,7 @@ import numpy as np
 import camb
 from camb import model, initialpower
 from tabulate import tabulate
-import universemachine as um
+#import universemachine as um
 import healpy as hp
 import sys
 from astropy.modeling.blackbody import blackbody_nu as bb
@@ -52,7 +52,7 @@ def sfr2irlum(Mstar,SFR):
     IRX0   = 1.32
     alpha  = 1.5 
     IRX    = alpha*np.log10(Mstar/10**10.35)+IRX0
-    irlum  = SFR/(KIR+KUV*10**(-IRX))        #um.sfr2irlum(Mstar,SFR)
+    irlum  = SFR/(KIR+KUV*10**(-IRX))
     return irlum
 
 def getnearestsnap(alist,zmid):
@@ -113,8 +113,19 @@ py       = halos['pos'][:,1][idx]
 pz       = halos['pos'][:,2][idx]
 IRlum    = sfr2irlum(obssm,obssfr)
 #------------------------------------------------------------------
+fint  = np.arange(40001)
+trans = np.zeros((fint,5))
+c=0
+for freq in (143,217,353,545,857):
+    f = d['BANDPASS_F%d'%freq].data['WAVENUMBER']*3e8*1e-7
+    T = d['BANDPASS_F%d'%freq].data['TRANSMISSION']
+    y = np.interp(fint,f,T)
+    trans[:,c]=y
+    c+=1
 
-for xx in range(-ntiles,ntiles):
+#------------------------------------------------------------------
+#for xx in range(-ntiles,ntiles):
+for xx in range(0,ntiles):
     for yy in range(-ntiles,ntiles):
         for zz in range(-ntiles,ntiles):
 
@@ -125,6 +136,7 @@ for xx in range(-ntiles,ntiles):
             if slicehit==True:
                 #totslicehit+=1
                 print('slicehit')
+                nu,B = greybody(zmid) # frequency and the greybody spectrum
 
                 for i in range(0,1):
                     sx  = px - origin[0] + boxL * xx                      # positions in the tesselated space [Mpc/h]
@@ -138,20 +150,22 @@ for xx in range(-ntiles,ntiles):
                         print(len(idx))
                         pix     = hp.vec2pix(nsideout,sx[idx]/r[idx],sy[idx]/r[idx],sz[idx]/r[idx])
                         q       = np.arange(np.amax(pix)+1)
-                        ret[q]  = ret[q] + np.bincount(pix, weights=IRlum[idx]/4/np.pi/(r[idx]**2)/(1+zi[idx])) # Convert luminosity to flux
+                        for freq in range(0,5): #143,217,353,545,857
+                            Fnu     = np.outer(B/np.sum(B)*trans[freq],IRlum[idx]/4/np.pi/(r[idx]**2)/(1+zi[idx]))
+                            ret[q]  = ret[q] + np.bincount(pix, weights=B/np.sum(B)*IRlum[idx]/4/np.pi/(r[idx]**2)/(1+zi[idx])) # Convert luminosity to flux
 
 hp.write_map('/project2/chihway/sims/MDPL2/universemachine/cibmaps/cibmap_bolo_%d_%d.fits'%(chilow,chiupp),ret,overwrite=True)
 
-nu,B = greybody(zmid) # frequency and teh greybody spectrum
-d    = fits.open('/project2/chihway/yuuki/repo/halo2fluxmap3/data/HFI_RIMO_R3.00.fits')
-fint = np.arange(40001)
+#nu,B = greybody(zmid) # frequency and the greybody spectrum
+#d    = fits.open('/project2/chihway/yuuki/repo/halo2fluxmap3/data/HFI_RIMO_R3.00.fits')
+#fint = np.arange(40001)
 
-for freq in (143,217,353,545,857):
-    f = d['BANDPASS_F%d'%freq].data['WAVENUMBER']*3e8*1e-7
-    T = d['BANDPASS_F%d'%freq].data['TRANSMISSION']
-    y = np.interp(fint,f*3,T)
-    f = np.sum(B*y)/np.sum(B) # fraction of total bolometric luminosity we receive
-    hp.write_map('/project2/chihway/sims/MDPL2/universemachine/cibmaps/cibmap_%d_%d_%d.fits'%(freq,chilow,chiupp),ret*f,overwrite=True)
+#for freq in (143,217,353,545,857):
+#    f = d['BANDPASS_F%d'%freq].data['WAVENUMBER']*3e8*1e-7
+#    T = d['BANDPASS_F%d'%freq].data['TRANSMISSION']
+#    y = np.interp(fint,f*3,T)
+#    f = np.sum(B*y)/np.sum(B) # fraction of total bolometric luminosity we receive
+#    hp.write_map('/project2/chihway/sims/MDPL2/universemachine/cibmaps/cibmap_%d_%d_%d.fits'%(freq,chilow,chiupp),ret*f,overwrite=True)
 
 
 
