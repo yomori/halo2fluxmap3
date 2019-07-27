@@ -158,7 +158,7 @@ for xx in range(0,ntiles):
                         #q       = np.arange(np.amax(pix)+1)
                         for freq in range(0,5): #143,217,353,545,857
                             Fnu     = np.sum(np.outer(B/np.sum(B)*trans[:,freq],IRlum[idx]/4/np.pi/(r[idx]**2)/(1+zi[idx])),axis=0)
-                            tmp     = np.insert(tmp,pix,Fnu)
+                            tmp     = np.put(tmp,pix,Fnu)
                             ret     = ret+tmp#[q] + np.bincount(pix, weights=Fnu) # Convert luminosity to flux
 
 hp.write_map('/project2/chihway/sims/MDPL2/universemachine/cibmaps/cibmap_bolo_%d_%d.fits'%(chilow,chiupp),ret,overwrite=True)
