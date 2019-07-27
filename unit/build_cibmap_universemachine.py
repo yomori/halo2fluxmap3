@@ -113,7 +113,7 @@ del obssm,obssfr
 px       = halos['pos'][:,0][idx]
 py       = halos['pos'][:,1][idx]
 pz       = halos['pos'][:,2][idx]
-
+del halos
 #------------------------------------------------------------------
 d    = fits.open('/project2/chihway/yuuki/repo/halo2fluxmap3/data/HFI_RIMO_R3.00.fits')
 fint  = np.arange(40001)
@@ -139,13 +139,14 @@ for xx in range(0,ntiles):
             if slicehit==True:
                 #totslicehit+=1
                 print('slicehit')
+                tmp      = np.zeros(hp.nside2npix(nsideout))
                 nu,B = greybody(zmid) # frequency and the greybody spectrum
 
                 for i in range(0,1):
                     sx  = px - origin[0] + boxL * xx                      # positions in the tesselated space [Mpc/h]
                     sy  = py - origin[1] + boxL * yy
                     sz  = pz - origin[2] + boxL * zz
-                    del px,py,pz
+                    #del px,py,pz
                     r   = np.sqrt(sx*sx + sy*sy + sz*sz)                    # comoving radial distance [Mpc/h]
                     zi  = results.redshift_at_comoving_radial_distance(r/h) # interpolated distance from position
                     idx = np.where((r>chilow) & (r<chiupp))[0]              # only select halos that are within the shell
@@ -153,10 +154,12 @@ for xx in range(0,ntiles):
                     if idx.size!=0:
                         print(len(idx))
                         pix     = hp.vec2pix(nsideout,sx[idx]/r[idx],sy[idx]/r[idx],sz[idx]/r[idx])
-                        q       = np.arange(np.amax(pix)+1)
+                        del sx,sy,sz
+                        #q       = np.arange(np.amax(pix)+1)
                         for freq in range(0,5): #143,217,353,545,857
                             Fnu     = np.sum(np.outer(B/np.sum(B)*trans[:,freq],IRlum[idx]/4/np.pi/(r[idx]**2)/(1+zi[idx])),axis=0)
-                            ret[q]  = ret[q] + np.bincount(pix, weights=Fnu) # Convert luminosity to flux
+                            tmp     = np.insert(pix,Fnu)
+                            ret     = ret+tmp#[q] + np.bincount(pix, weights=Fnu) # Convert luminosity to flux
 
 hp.write_map('/project2/chihway/sims/MDPL2/universemachine/cibmaps/cibmap_bolo_%d_%d.fits'%(chilow,chiupp),ret,overwrite=True)
 
