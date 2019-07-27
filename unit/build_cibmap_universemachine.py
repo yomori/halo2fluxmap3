@@ -145,6 +145,7 @@ for xx in range(0,ntiles):
                     sx  = px - origin[0] + boxL * xx                      # positions in the tesselated space [Mpc/h]
                     sy  = py - origin[1] + boxL * yy
                     sz  = pz - origin[2] + boxL * zz
+                    del px,py,pz
                     r   = np.sqrt(sx*sx + sy*sy + sz*sz)                    # comoving radial distance [Mpc/h]
                     zi  = results.redshift_at_comoving_radial_distance(r/h) # interpolated distance from position
                     idx = np.where((r>chilow) & (r<chiupp))[0]              # only select halos that are within the shell
