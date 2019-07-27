@@ -108,10 +108,12 @@ obssm    = halos['obs_sm']
 idx      = np.where(obssm>0)[0]   #only select halos with >0 stellar mass
 obssm    = halos['obs_sm'][idx]
 obssfr   = halos['obs_sfr'][idx]
+IRlum    = sfr2irlum(obssm,obssfr)
+del obssm,obssfr
 px       = halos['pos'][:,0][idx]
 py       = halos['pos'][:,1][idx]
 pz       = halos['pos'][:,2][idx]
-IRlum    = sfr2irlum(obssm,obssfr)
+
 #------------------------------------------------------------------
 fint  = np.arange(40001)
 trans = np.zeros((fint,5))
