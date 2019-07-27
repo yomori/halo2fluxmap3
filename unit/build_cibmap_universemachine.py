@@ -128,9 +128,12 @@ for freq in (143,217,353,545,857):
 
 #------------------------------------------------------------------
 #for xx in range(-ntiles,ntiles):
+#for xx in range(0,ntiles):
+#    for yy in range(-ntiles,ntiles):
+#        for zz in range(-ntiles,ntiles):
 for xx in range(0,ntiles):
-    for yy in range(-ntiles,ntiles):
-        for zz in range(-ntiles,ntiles):
+    for yy in range(-2,2):
+        for zz in range(-2,2):
 
             print("%d %d %d"%(xx,yy,zz))
 
