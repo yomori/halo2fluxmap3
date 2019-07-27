@@ -115,6 +115,7 @@ py       = halos['pos'][:,1][idx]
 pz       = halos['pos'][:,2][idx]
 
 #------------------------------------------------------------------
+d    = fits.open('/project2/chihway/yuuki/repo/halo2fluxmap3/data/HFI_RIMO_R3.00.fits')
 fint  = np.arange(40001)
 trans = np.zeros((40001,5))
 c=0
