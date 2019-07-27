@@ -116,7 +116,7 @@ pz       = halos['pos'][:,2][idx]
 
 #------------------------------------------------------------------
 fint  = np.arange(40001)
-trans = np.zeros((fint,5))
+trans = np.zeros((40001,5))
 c=0
 for freq in (143,217,353,545,857):
     f = d['BANDPASS_F%d'%freq].data['WAVENUMBER']*3e8*1e-7
