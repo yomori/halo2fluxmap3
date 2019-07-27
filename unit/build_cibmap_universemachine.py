@@ -52,7 +52,7 @@ def sfr2irlum(Mstar,SFR):
     IRX0   = 1.32
     alpha  = 1.5 
     IRX    = alpha*np.log10(Mstar/10**10.35)+IRX0
-    irlum  = SFR/(KIR+KUV*10**(-IRX))
+    irlum  = SFR/(KIR+KUV*10**(-IRX))*3.828e26 # convert Lsol to W
     return irlum
 
 def getnearestsnap(alist,zmid):
@@ -155,7 +155,8 @@ for xx in range(0,ntiles):
                         print(len(idx))
                         pix     = hp.vec2pix(nsideout,sx[idx]/r[idx],sy[idx]/r[idx],sz[idx]/r[idx])
                         del sx,sy,sz
-                        #q       = np.arange(np.amax(pix)+1)
+                        r[idx]=r[idx]*3.086e22/h # convert Mpc/h to m 
+                        
                         for freq in range(0,1): #143,217,353,545,857
                             Fnu     = np.sum(np.outer(B/np.sum(B)*trans[:,freq],IRlum[idx]/4/np.pi/(r[idx]**2)/(1+zi[idx])),axis=0)
                             np.put(tmp,pix,Fnu)
