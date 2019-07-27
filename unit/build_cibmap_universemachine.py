@@ -154,8 +154,8 @@ for xx in range(0,ntiles):
                         pix     = hp.vec2pix(nsideout,sx[idx]/r[idx],sy[idx]/r[idx],sz[idx]/r[idx])
                         q       = np.arange(np.amax(pix)+1)
                         for freq in range(0,5): #143,217,353,545,857
-                            Fnu     = np.outer(B/np.sum(B)*trans[:,freq],IRlum[idx]/4/np.pi/(r[idx]**2)/(1+zi[idx]))
-                            ret[q]  = ret[q] + np.bincount(pix, weights=B/np.sum(B)*IRlum[idx]/4/np.pi/(r[idx]**2)/(1+zi[idx])) # Convert luminosity to flux
+                            Fnu     = np.sum(np.outer(B/np.sum(B)*trans[:,freq],IRlum[idx]/4/np.pi/(r[idx]**2)/(1+zi[idx])),axis=1)
+                            ret[q]  = ret[q] + np.bincount(pix, weights=Fnu) # Convert luminosity to flux
 
 hp.write_map('/project2/chihway/sims/MDPL2/universemachine/cibmaps/cibmap_bolo_%d_%d.fits'%(chilow,chiupp),ret,overwrite=True)
 
