@@ -13,7 +13,7 @@ from astropy.io import fits
 
 def greybody(zmid):
     zmid = 2.0
-    nu   = np.arange(1001)
+    nu   = np.arange(1101)
     nu   = nu*1e9
     zc      = 2.; sigc  = 2. ; alpha = 2.; beta  = 2.; nup = 4955e9
     kb      = 1.38064852e-23; Tdust = 34.0; h = 6.62607004e-34
