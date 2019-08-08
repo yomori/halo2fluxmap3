@@ -26,16 +26,22 @@ def checkslicehit(chilow,chihigh,xx,yy,zz):
     bvy=np.array([0,   0,boxL,boxL,   0,   0,boxL,boxL])
     bvz=np.array([0,   0,   0,   0,boxL,boxL,boxL,boxL])
 
-    sx  = (bvx - origin[0] + boxL * xx);
-    sy  = (bvy - origin[1] + boxL * yy);
-    sz  = (bvz - origin[2] + boxL * zz);
-    r   = np.sqrt(sx*sx + sy*sy + sz*sz)
-
-    if ( (np.all(chilow*0.8>r)) | (np.all(chihigh*1.2<r)) ):
-        return False
-    else:
+    boo = 0
+    r   = np.zeros(8)
+    for i in range(0,8):
+        sx  = (bvx[i] - origin[0] + boxL * xx);
+        sy  = (bvy[i] - origin[1] + boxL * yy);
+        sz  = (bvz[i] - origin[2] + boxL * zz);
+        r[i]= np.sqrt(sx*sx + sy*sy + sz*sz)
+    if chihigh<np.min(r):
+        boo=boo+1
+    if chilow>np.max(r):
+        boo=boo+1
+    print(chilow,chihigh,np.min(r),np.max(r))
+    if (boo==0):
         return True
-
+    else:
+        return False
 
 def getnearestsnap(alist,zmid):
     zsnap  = 1/alist-1.
@@ -45,7 +51,8 @@ def getnearestsnap(alist,zmid):
 shellnum   = int(sys.argv[1]) # Shell index
 shellwidth = int(sys.argv[2]) # Width of shell in Mpc/h
 
-alist   = np.loadtxt('/scratch/users/yomori/mdpl2/halos/alist')
+root='/project2/chihway/sims/MDPL2/hlists/'
+alist   = np.loadtxt(root+'alist')
 zlist   = 1/alist-1.
 origin  = [0,0,0]
 boxL    = 1000
@@ -75,7 +82,7 @@ print('The scalefactor closest to the middle of the shell is [%.6f]'%(nearestsna
 #ret      = np.zeros(hp.nside2npix(nsideout))
 
 #--------------Loading the binary data file------------------------
-d  = np.load('/scratch/users/yomori/mdpl2/halos/stripped_%.6f.npy'%nearestsnap)
+d  = np.load(root+'/stripped_%.6f.npy'%nearestsnap)
 m  = d[:,6]
 idx=np.where(m>1e12)[0]
 px = d[idx,0]
@@ -120,12 +127,30 @@ for xx in range(-ntiles,ntiles):
                     if idx.size!=0:
                         tht,phi = hp.vec2ang(np.c_[sx[idx]/r[idx],sy[idx]/r[idx],sz[idx]/r[idx]])
                         ra,dec  = tp2rd(tht,phi)
-	                totra  = np.append(totra,ra)
-	                totdec = np.append(totdec,dec)	
-                        totz   = np.append(totz,zi[idx])
-                        totm   = np.append(totm,m[idx])
+                        totra   = np.append(totra,ra)
+                        totdec  = np.append(totdec,dec)	
+                        totz    = np.append(totz,zi[idx])
+                        totm    = np.append(totm,m[idx])
 
-np.save('/scratch/users/yomori/mdpl2/halos/haloslc_%d.npy'%shellnum,np.c_[totra,totdec,totz,totm])
+np.save(root+'haloslc_%d.npy'%shellnum,np.c_[totra,totdec,totz,totm])
+#from astropy.io import fits
+#import numpy as np
+#c1 = fits.Column(name='RA', array=totra, format='E')
+#c2 = fits.Column(name='DEC', array=totdec, format='E')
+#c3 = fits.Column(name='M200RED', array=totm, format='D')
+#c4 = fits.Column(name='REDSHIFT', array=totz, format='E')
+#t = fits.BinTableHDU.from_columns([c1, c2, c3,c4])
+#t.writeto(root+'haloslc_%d.fits'%shellnum,overwrite=True)
+
+
+
+
+
+
+
+
+
+#np.save('/scratch/users/yomori/mdpl2/halos/haloslc_%d.npy'%shellnum,np.c_[totra,totdec,totz,totm])
 #nu,B = greybody(zmid) # frequency and the greybody spectrum
 #d    = fits.open('/project2/chihway/yuuki/repo/halo2fluxmap3/data/HFI_RIMO_R3.00.fits')
 #fint = np.arange(40001)
